@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Javascript Checkers</title>
+        <meta charset="UTF-8">
+
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+
+        <style>
+            #canvas{
+                height:600px;
+                width:600px;
+                margin:auto;
+                user-select: none;
+            
+            }
+            #gameboard{
+                display:grid;
+                margin-top:-20px;
+                flex-direction: column-reverse;
+                grid-template-columns: 75px 75px 75px 75px 75px 75px 75px 75px
+            }
+            .num{
+                border:1px solid black;
+                width:75px;
+                height:75px;
+            }
+            .b{
+                background:linear-gradient(52deg, rgba(193,193,193,1) 0%, rgba(237,237,237,1) 100%);;
+            }
+            .w{
+                background:black;
+            }
+            .pieceR{
+                width:70px;
+                height:70px;
+                border-radius:50%;
+                background:red;
+                margin:auto;
+                margin-top:2.5px;
+                box-sizing: border-box;
+                border:7px solid maroon;
+                transition: 0.15s;
+                text-align: center;
+                font-size:48px;
+                font-family:serif;
+                color:rgba(0, 0, 0, 0);
+                
+                
+            }
+            .king{
+              color:black !important;
+            }
+           
+            .pieceB{
+                width:70px;
+                height:70px;
+                border-radius:50%;
+                background:skyblue;
+                margin:auto;
+                margin-top:2.5px;
+                box-sizing: border-box;
+                border:7px solid #28a9bd;
+                transition: 0.15s;
+                color:rgba(0, 0, 0, 0);
+                text-align: center;
+                font-size:48px;
+                font-family:serif;
+                
+
+            }
+            
+            ul{
+                color:red;
+                text-align:center;
+            }
+            #canvas{
+                margin-top:50px;
+            }
+            #sidebar{
+                float: left;
+                width:50px;
+                height:614px;
+                display:grid;
+                align-content:space-around;
+                margin-right:10px;
+            }
+        
+            #top-bar{
+                display:flex;
+                width:600px;
+                height:50px;
+               
+                margin-left:50px;
+            }
+            #top-bar ul{
+                flex-grow: 1;
+                margin-left:-20px 
+            }
+           
+            .draggableR.dragging{
+            opacity:0.5;
+            }
+           
+            .draggableB.dragging{
+            opacity:0.5;
+            }
+            .highLightedR{
+                background:maroon;
+                border:none;
+            }
+            .highLightedB{
+                background:#28a9bd;;
+                border:none;
+            }
+            .hghLghtSqrR{
+                background:maroon;
+                transition:0.3s;
+            }
+            .hghLghtSqrB{
+                background:#164b61;
+                transition:0.3s;
+            }
+           
+        </style>
+    </head>
+<body>
+<div id="canvas">
+    <div id="sidebar">
+    <ul>1</ul>
+    <ul>2</ul>
+    <ul>3</ul>
+    <ul>4</ul>
+    <ul>5</ul>
+    <ul>6</ul>
+    <ul>7</ul>
+    <ul>8</ul>
+    </div>
+    <div id="gameboard">
+       
+        <div class="row rowA">
+            <div id="A1" class="num b num1"></div>
+            <div id="A2" class="num w num2"></div>
+            <div id="A3" class="num b num3"></div>
+            <div id="A4" class="num w num4"></div>
+            <div id="A5" class="num b num5"></div>
+            <div id="A6" class="num w num6"></div>
+            <div id="A7" class="num b num7"></div>
+            <div id="A8" class="num w num8"></div>
+        </div>
+        <div class="row rowB">
+            <div id="B1" class="num w num1"></div>
+            <div id="B2" class="num b num2"></div>
+            <div id="B3" class="num w num3"></div>
+            <div id="B4" class="num b num4"></div>
+            <div id="B5" class="num w num5"></div>
+            <div id="B6" class="num b num6"></div>
+            <div id="B7" class="num w num7"></div>
+            <div id="B8" class="num b num8"></div>
+        </div>
+        <div class="row rowC">
+            <div id="C1" class="num b num1"></div>
+            <div id="C2" class="num w num2"></div>
+            <div id="C3" class="num b num3"></div>
+            <div id="C4" class="num w num4"></div>
+            <div id="C5" class="num b num5"></div>
+            <div id="C6" class="num w num6"></div>
+            <div id="C7" class="num b num7"></div>
+            <div id="C8" class="num w num8"></div>
+        </div>
+        <div class="row rowD">
+            <div id="D1" class="num w num1"></div>
+            <div id="D2" class="num b num2"></div>
+            <div id="D3" class="num w num3"></div>
+            <div id="D4" class="num b num4"></div>
+            <div id="D5" class="num w num5"></div>
+            <div id="D6" class="num b num6"></div>
+            <div id="D7" class="num w num7"></div>
+            <div id="D8" class="num b num8"></div>
+        </div>
+        <div class="row rowE">
+            <div id="E1" class="num b num1"></div>
+            <div id="E2" class="num w num2"></div>
+            <div id="E3" class="num b num3"></div>
+            <div id="E4" class="num w num4"></div>
+            <div id="E5" class="num b num5"></div>
+            <div id="E6" class="num w num6"></div>
+            <div id="E7" class="num b num7"></div>
+            <div id="E8" class="num w num8"></div>
+        </div>
+        <div class="row rowF">
+            <div id="F1" class="num w num1"></div>
+            <div id="F2" class="num b num2"></div>
+            <div id="F3" class="num w num3"></div>
+            <div id="F4" class="num b num4"></div>
+            <div id="F5" class="num w num5"></div>
+            <div id="F6" class="num b num6"></div>
+            <div id="F7" class="num w num7"></div>
+            <div id="F8" class="num b num8"></div>
+        </div>
+        <div class="row rowG">
+            <div id="G1" class="num b num1"></div>
+            <div id="G2" class="num w num2"></div>
+            <div id="G3" class="num b num3"></div>
+            <div id="G4" class="num w num4"></div>
+            <div id="G5" class="num b num5"></div>
+            <div id="G6" class="num w num6"></div>
+            <div id="G7" class="num b num7"></div>
+            <div id="G8" class="num w num8"></div>
+        </div>
+        <div class="row rowH">
+            <div id="H1" class="num w num1"></div>
+            <div id="H2" class="num b num2"></div>
+            <div id="H3" class="num w num3"></div>
+            <div id="H4" class="num b num4"></div>
+            <div id="H5" class="num w num5"></div>
+            <div id="H6" class="num b num6"></div>
+            <div id="H7" class="num w num7"></div>
+            <div id="H8" class="num b num8"></div>
+        </div>
+       
+
+    </div>
+    <div id="top-bar">
+        <ul>A</ul>
+        <ul>B</ul>
+        <ul>C</ul>
+        <ul>D</ul>
+        <ul>E</ul>
+        <ul>F</ul>
+        <ul>G</ul>
+        <ul>H</ul>
+    </div>
+</div>
+
+
+
+<script>
+
+
+const B = '<div draggable="true" class="draggableB pieceB">X</div>'
+const R = '<div draggable="true" class="draggableR pieceR">X</div>'
+const posArray = [
+"A1","A2","A3","A4","A5","A6","A7","A8",
+"B1","B2","B3","B4","B5","B6","B7","B8",
+"C1","C2","C3","C4","C5","C6","C7","C8",
+"D1","D2","D3","D4","D5","D6","D7","D8",
+"E1","E2","E3","E4","E5","E6","E7","E8",
+"F1","F2","F3","F4","F5","F6","F7","F8",
+"G1","G2","G3","G4","G5","G6","G7","G8",
+"H1","H2","H3","H4","H5","H6","H7","H8",
+]
+
+
+
+/*
+
+
+
+A: 0-7
+B: 8-15
+C: 16-23
+D: 24-31
+E: 32-39
+F: 40-47
+G: 48-55
+H: 56-63
+Okay, now let's start writing some rules.
+
+1. You can only move diagonally, forward for normal pieces. How?
+Maybe I can define a "square initial" with a let variable each time
+I start to move a piece, then it resets.
+
+*/
+
+function setStartPos(){
+    //B
+    document.querySelector(".rowB .num1").innerHTML=B
+    document.querySelector(".rowD .num1").innerHTML=B
+    document.querySelector(".rowF .num1").innerHTML=B
+    document.querySelector(".rowH .num1").innerHTML=B
+
+    document.querySelector(".rowA .num2").innerHTML=B
+    document.querySelector(".rowC .num2").innerHTML=B
+    document.querySelector(".rowE .num2").innerHTML=B
+    document.querySelector(".rowG .num2").innerHTML=B
+    
+    document.querySelector(".rowB .num3").innerHTML=B
+    document.querySelector(".rowD .num3").innerHTML=B
+    document.querySelector(".rowF .num3").innerHTML=B
+    document.querySelector(".rowH .num3").innerHTML=B
+    //R
+    document.querySelector(".rowA .num8").innerHTML=R
+    document.querySelector(".rowC .num8").innerHTML=R
+    document.querySelector(".rowE .num8").innerHTML=R
+    document.querySelector(".rowG .num8").innerHTML=R
+    
+    document.querySelector(".rowB .num7").innerHTML=R
+    document.querySelector(".rowD .num7").innerHTML=R
+    document.querySelector(".rowF .num7").innerHTML=R
+    document.querySelector(".rowH .num7").innerHTML=R
+
+    document.querySelector(".rowA .num6").innerHTML=R
+    document.querySelector(".rowC .num6").innerHTML=R
+    document.querySelector(".rowE .num6").innerHTML=R
+    document.querySelector(".rowG .num6").innerHTML=R
+    
+}
+setStartPos()
+var redToMove = true
+var curPosR 
+var curPosB 
+let highLight
+var contRemove = []
+var homeSpaceG
+var empIDg = null
+
+
+    //legalMoves = "#"+posArray[x], "#"+posArray[y]
+const draggablesR = document.querySelectorAll('.draggableR')
+const draggablesB = document.querySelectorAll('.draggableB')
+//const containers = document.querySelectorAll('.w')
+        
+function redToMoveUI(){
+    //ADDS THE HOVER AND GRAB EFFECTS
+        $(draggablesR).attr("draggable","true")
+        $(draggablesB).removeAttr("draggable")
+        $(draggablesR).mouseenter(function(){
+            $(this).css({
+                "cursor":"grab",
+                "opacity":"0.8"})
+        })
+        $(draggablesR).mouseleave(function(){
+            $(this).css({
+                "cursor":"  grab",
+                "opacity":"1"})
+        })
+        $(draggablesR).mousedown(function(){    
+            curPosR = $(this).parent().attr("id")
+            findLegalMovesR();
+            $(this).css({
+                "cursor":"grabbing",
+                });
+        })
+        $(draggablesR).mouseup(function(){  
+            $(this).css({
+                "cursor":"grab",
+                })
+        })
+        $(draggablesB).css({
+            "opacity":"0.6",
+            }) 
+        $(draggablesR).css({
+            "opacity":"1",
+            }) 
+    //DELETES THE BLUE HOVER AND GRAB EFFECTS
+    $(draggablesB).mouseenter(function(){
+            $(this).css({
+                "cursor":"auto",
+                "opacity":"0.6"
+            })
+        })
+        $(draggablesB).mouseleave(function(){
+            $(this).css({
+                "cursor":"auto",
+                "opacity":"0.6"
+            })
+        })
+        $(draggablesB).mousedown(function(){
+            $(this).css({
+                "cursor":"auto",
+                "opacity":"0.6"
+            })
+        })
+        $(draggablesB).mouseup(function(){
+            $(this).css({
+                "cursor":"auto",
+                "opacity":"0.6"
+            })
+        })
+}//END REDTOMOVEUI
+
+function blueToMoveUI(){
+    //ADDS THE HOVER AND GRAB EFFECTS
+        $(draggablesB).attr("draggable","true")
+        $(draggablesR).removeAttr("draggable")
+        $(draggablesB).mouseenter(function(){
+            $(this).css({
+                "cursor":"grab",
+                "opacity":"0.8"})
+        })
+        $(draggablesB).mouseleave(function(){
+            $(this).css({
+                "cursor":"grab",
+                "opacity":"1"})
+        })
+        $(draggablesB).mousedown(function(){
+            curPosB = $(this).parent().attr("id")
+            findLegalMovesB()
+            $(this).css({
+                "cursor":"grabbing",
+                })
+        })
+        $(draggablesB).mouseup(function(){
+            $(this).css({
+                "cursor":"grab",
+                })
+        })
+        $(draggablesR).css("opacity","0.6")
+        $(draggablesB).css("opacity","1")
+    //DELETES THE RED HOVER AND GRAB EFFECTS
+        $(draggablesR).mouseenter(function(){
+            $(this).css({
+                "cursor":"auto",
+                "opacity":"0.6"
+            })
+        })
+        $(draggablesR).mouseleave(function(){
+            $(this).css({
+                "cursor":"auto",
+                "opacity":"0.6"
+            })
+        })
+        $(draggablesR).mousedown(function(){
+            $(this).css({
+                "cursor":"auto",
+                "opacity":"0.6"
+            })
+        })
+        $(draggablesR).mouseup(function(){
+            $(this).css({
+                "cursor":"auto",
+                "opacity":"0.6"
+            })
+        })
+        
+}//END BLUETOMOVEUI
+
+        draggablesR.forEach(draggable => {
+          draggable.addEventListener('dragstart', () => {
+            draggable.classList.add('dragging')
+            
+          })
+          draggable.addEventListener('dragend', () => {
+            draggable.classList.add('dragging')
+            draggable.classList.remove('dragging')
+            
+           
+          })
+        })
+        draggablesB.forEach(draggable => {
+          draggable.addEventListener('dragstart', () => {
+            draggable.classList.add('dragging')
+            
+          })
+          draggable.addEventListener('dragend', () => {
+            draggable.classList.add('dragging')
+            draggable.classList.remove('dragging')
+            
+            
+          })
+        })
+//FIND LEGAL MOVES
+redToMoveUI()
+function moveOrder(){
+    console.log('moveOrder()')
+    if(redToMove==false){blueToMoveUI()}
+    if(redToMove==true){redToMoveUI()}
+}
+
+function findLegalMovesR(){
+    contRemove = []
+    let cont2ID=[]
+        empIDg = null
+    let empID
+    let legalMovesRInd = []
+    let legMovIDs = ""
+    let curPosRInd = posArray.indexOf(curPosR.toString())
+    //Checks if position is A or H
+    if(curPosRInd<=7){legMovIDs = "#"+posArray[curPosRInd+7]}
+    else if(curPosRInd>=56){legMovIDs = "#"+posArray[curPosRInd-9]}
+    //Checks other position
+    else {
+        legMovIDs= "#"+posArray[curPosRInd+7]+","+"#"+posArray[curPosRInd-9]
+        
+    }
+    let containers = Array.from(document.querySelectorAll(legMovIDs))
+
+
+    if($("#"+posArray[curPosRInd]).children().hasClass('king')){
+        let kngSqr1 = document.querySelector("#"+posArray[curPosRInd-7])
+        let kngSqr2 = document.querySelector("#"+posArray[curPosRInd+9])
+
+        if (kngSqr1!=null){containers.push(kngSqr1)}
+        if (kngSqr2!=null){containers.push(kngSqr2)}
+        
+        console.log(containers)
+    }
+
+    
+    containers.forEach(container =>{
+       let conChildren = Array.from(container.children)
+           conChildren.forEach(conChild =>{
+               if(conChild.classList.contains("pieceB")){
+                    let ind = posArray.indexOf(conChild.parentElement.id)
+                    conChildIDs= "#"+posArray[ind+7]+","+"#"+posArray[ind-9]
+                    //**Add King Child ID's option if king*************************************
+                    if($("#"+posArray[curPosRInd]).children().hasClass('king')){
+                        conChildIDs+=",#"+posArray[ind+9]+","+"#"+posArray[ind-7]
+                    }
+                    
+                    let containers2 = document.querySelectorAll(conChildIDs)
+                        containers2.forEach(cont2 =>{
+                            let conGrnChild=cont2.firstChild
+                            if (conGrnChild==null){
+                /////////////////Okay, we've found an empty ID. Let's see if it's a capture.
+                               // 14 | -18
+                               let empInd = posArray.indexOf(cont2.id)
+                                cont2ID.push(cont2.id)
+                                console.log(cont2.id)
+                                let nullSqrIDs = ['A8', 'B8', 'C8', 'D8', 'E8', 'F8', 'G8', 'H8']
+                                nullSqrIDs.forEach(nsqr=>{
+                                    if(nsqr==cont2.id){
+                                        empInd=null
+                                    }
+                                })
+
+                                if(empInd == curPosRInd+14){
+                                    containers.splice(containers.indexOf(container),1,document.querySelector("#"+posArray[empInd]))
+                                    contRemove.push(container.firstChild)
+                                    empID = "#"+cont2.id
+                                    empIDg = empInd
+                                } 
+                                if(empInd == curPosRInd-18){
+                                    containers.splice(containers.indexOf(container),1,document.querySelector("#"+posArray[empInd]))
+                                    contRemove.push(container.firstChild)
+                                    empID = "#"+cont2.id
+                                    empIDg = empInd
+                                    
+                                }
+                                if(empInd == curPosRInd-14){
+                                    containers.splice(containers.indexOf(container),1,document.querySelector("#"+posArray[empInd]))
+                                    contRemove.push(container.firstChild)
+                                    empID = "#"+cont2.id
+                                    empIDg = empInd
+                                   
+                                } 
+                                if(empInd == curPosRInd+18){
+                                    containers.splice(containers.indexOf(container),1,document.querySelector("#"+posArray[empInd]))
+                                    contRemove.push(container.firstChild)
+                                    empID = "#"+cont2.id
+                                    empIDg = empInd
+                                    
+                                }
+                                //THIS FORCES A CAPTURE MOVE IF NO OTHER MOVES ARE AVAILABLE
+                                
+
+                            }
+                
+                    })
+
+                   
+        
+               }
+               
+           })
+  
+    })
+    
+    
+
+ 
+  
+    
+    //NIXES ALL NON-CAPTURE SPACES IF THERE IS A CAPTURE SPACE
+    if(typeof empIDg ==="number"){
+        let trueIDs = []
+        for(let i=0;i<cont2ID.length;i++){
+            containers.forEach(container=>{
+                if(container.id==cont2ID[i]){
+                    trueIDs.push(container)
+                }
+            }) 
+        }
+        console.log(trueIDs)
+        containers = trueIDs
+    }
+    
+    let homeSpace = "#"+posArray[curPosRInd]
+    homeSpaceG = homeSpace
+    /////////CHANGE THIS LINE IN BLUE TOO!
+    
+    
+    $(homeSpaceG).on('dragover', event =>{
+        event.preventDefault()
+        let draggable = document.querySelector('.dragging')
+        $(homeSpace).append(draggable)
+        curPosR = $(draggable).parent().attr("id")
+        
+        redToMove=true
+        contRemove.forEach(cont=>{
+        
+            $(cont).removeClass("highLightedR")
+        
+    })
+    })
+    containersG = containers
+    $(".w").removeClass("hghLghtSqrR")
+    containersG.forEach(container => { 
+        
+        if (container.innerHTML==""){
+        $(container).addClass("hghLghtSqrR")
+        $(container).on('dragover', event => {
+            event.preventDefault()
+            let draggable = document.querySelector('.dragging')
+            container.appendChild(draggable)
+            curPosR = $(draggable).parent().attr("id")
+            redToMove=false
+            contRemove.forEach(cont=>{
+                let containInd = posArray.indexOf(container.id)
+                let contInd = posArray.indexOf(cont.parentElement.id)
+                if(
+                    contInd == containInd-9|
+                    contInd == containInd-7|
+                    contInd == containInd+9|
+                    contInd == containInd+7)
+                    {
+                $(cont).addClass("highLightedR")
+                    }
+            })
+        
+        })
+        }
+    })
+    console.log(containersG)
+    }//END FINDLEGALMOVES
+function evalLegalMovesR(){
+    contRemove = []
+    let cont2ID=[]
+        empIDg = null
+    let empID
+    let legalMovesRInd = []
+    let legMovIDs = ""
+    let curPosRInd = posArray.indexOf(curPosR.toString())
+    //Checks if position is A or H
+    if(curPosRInd<=7){legMovIDs = "#"+posArray[curPosRInd+7]}
+    else if(curPosRInd>=56){legMovIDs = "#"+posArray[curPosRInd-9]}
+    //Checks other position
+    else {
+        legMovIDs= "#"+posArray[curPosRInd+7]+","+"#"+posArray[curPosRInd-9]
+        
+    }
+    let containers = Array.from(document.querySelectorAll(legMovIDs))
+
+
+    if($("#"+posArray[curPosRInd]).children().hasClass('king')){
+        let kngSqr1 = document.querySelector("#"+posArray[curPosRInd-7])
+        let kngSqr2 = document.querySelector("#"+posArray[curPosRInd+9])
+
+        if (kngSqr1!=null){containers.push(kngSqr1)}
+        if (kngSqr2!=null){containers.push(kngSqr2)}
+        
+        console.log(containers)
+    }
+
+    
+    containers.forEach(container =>{
+       let conChildren = Array.from(container.children)
+           conChildren.forEach(conChild =>{
+               if(conChild.classList.contains("pieceB")){
+                    let ind = posArray.indexOf(conChild.parentElement.id)
+                    conChildIDs= "#"+posArray[ind+7]+","+"#"+posArray[ind-9]
+                    //**Add King Child ID's option if king*************************************
+                    if($("#"+posArray[curPosRInd]).children().hasClass('king')){
+                        conChildIDs+=",#"+posArray[ind+9]+","+"#"+posArray[ind-7]
+                    }
+                    
+                    let containers2 = document.querySelectorAll(conChildIDs)
+                        containers2.forEach(cont2 =>{
+                            let conGrnChild=cont2.firstChild
+                            if (conGrnChild==null){
+                /////////////////Okay, we've found an empty ID. Let's see if it's a capture.
+                               // 14 | -18
+                                let empInd = posArray.indexOf(cont2.id)
+                                console.log(cont2.id)
+                                let nullSqrIDs = ['A8', 'B8', '#C8', 'D8', 'E8', 'F8', 'G8', 'H8']
+                                
+                                nullSqrIDs.forEach(nsqr=>{
+                                    if(nsqr==cont2.id){
+                                        empInd=null
+                                    }
+                                })
+                                
+                                if(empInd == curPosRInd+14){
+                                    containers.splice(containers.indexOf(container),1,document.querySelector("#"+posArray[empInd]))
+                                    contRemove.push(container.firstChild)
+                                    empID = "#"+cont2.id
+                                    empIDg = empInd
+                                } 
+                                if(empInd == curPosRInd-18){
+                                    containers.splice(containers.indexOf(container),1,document.querySelector("#"+posArray[empInd]))
+                                    contRemove.push(container.firstChild)
+                                    empID = "#"+cont2.id
+                                    empIDg = empInd
+                                }
+                                if(empInd == curPosRInd-14){
+                                    containers.splice(containers.indexOf(container),1,document.querySelector("#"+posArray[empInd]))
+                                    contRemove.push(container.firstChild)
+                                    empID = "#"+cont2.id
+                                    empIDg = empInd
+                                } 
+                                if(empInd == curPosRInd+18){
+                                    containers.splice(containers.indexOf(container),1,document.querySelector("#"+posArray[empInd]))
+                                    contRemove.push(container.firstChild)
+                                    empID = "#"+cont2.id
+                                    empIDg = empInd
+                                }
+
+                            }
+                
+                    })
+
+                   
+        
+               }
+               
+           })
+  
+    })
+  
+    }//END FINDLEGALMOVES
+    
+function findLegalMovesB(){
+    contRemove = []
+    let cont2ID=[]
+        empIDg = null
+    let empID
+    let legalMovesBInd = []
+    let legMovIDs = ""
+    let curPosBInd = posArray.indexOf(curPosB.toString())
+    //Checks if position is A or H
+    if(curPosBInd<=7){legMovIDs = "#"+posArray[curPosBInd+9]}
+    else if(curPosBInd>=56){legMovIDs = "#"+posArray[curPosBInd-7]}
+    //Checks other position
+    else {
+        legMovIDs= "#"+posArray[curPosBInd+9]+","+"#"+posArray[curPosBInd-7]
+        
+    }
+    let containers = Array.from(document.querySelectorAll(legMovIDs))
+
+    if($("#"+posArray[curPosBInd]).children().hasClass('king')){
+        let kngSqr1 = document.querySelector("#"+posArray[curPosBInd+7])
+        let kngSqr2 = document.querySelector("#"+posArray[curPosBInd-9])
+
+        if (kngSqr1!=null){containers.push(kngSqr1)}
+        if (kngSqr2!=null){containers.push(kngSqr2)}
+        
+        console.log(containers)
+    }
+    containers.forEach(container =>{
+       let conChildren = Array.from(container.children)
+           conChildren.forEach(conChild =>{
+               if(conChild.classList.contains("pieceR")){
+                    let ind = posArray.indexOf(conChild.parentElement.id)
+                    conChildIDs= "#"+posArray[ind+9]+","+"#"+posArray[ind-7]
+                    //**Add King Child ID's option if king*************************************
+                    if($("#"+posArray[curPosBInd]).children().hasClass('king')){
+                        conChildIDs+=",#"+posArray[ind-9]+","+"#"+posArray[ind+7]
+                    }
+                    
+                    
+                    let containers2 = document.querySelectorAll(conChildIDs)
+                        containers2.forEach(cont2 =>{
+                            let conGrnChild=cont2.firstChild
+                            if (conGrnChild==null){
+                /////////////////Okay, we've found an empty ID. Let's see if it's a capture.
+                               // 14 | -18
+                                let empInd = posArray.indexOf(cont2.id)
+                                cont2ID.push(cont2.id)
+                                console.log(cont2.id)
+                                let nullSqrIDs = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1', 'H1']
+                                nullSqrIDs.forEach(nsqr=>{
+                                    if(nsqr==cont2.id){
+                                        empInd=null
+                                    }
+                                })
+                                if(empInd == curPosBInd-14){                                
+                                    containers.splice(containers.indexOf(container),1,document.querySelector("#"+posArray[empInd]))
+                                    contRemove.push(container.firstChild)
+                                    empID = "#"+cont2.id
+                                    empIDg = empInd
+                                    
+                                } 
+                                if(empInd == curPosBInd+18){
+                                    containers.splice(containers.indexOf(container),1,document.querySelector("#"+posArray[empInd]))                                   
+                                    contRemove.push(container.firstChild)
+                                    empID = "#"+cont2.id
+                                    empIDg = empInd
+                                    
+                                }
+                                if(empInd == curPosBInd+14){                                
+                                    containers.splice(containers.indexOf(container),1,document.querySelector("#"+posArray[empInd]))
+                                    contRemove.push(container.firstChild)
+                                    empID = "#"+cont2.id
+                                    empIDg = empInd
+                                  
+                                } 
+                                if(empInd == curPosBInd-18){
+                                    containers.splice(containers.indexOf(container),1,document.querySelector("#"+posArray[empInd]))                                   
+                                    contRemove.push(container.firstChild)
+                                    empID = "#"+cont2.id
+                                    empIDg = empInd
+                                
+                                }
+                                
+
+                            }
+                
+                    })
+
+                   
+        
+               }
+               
+           })
+  
+    })
+ 
+    //NIXES ALL NON-CAPTURE SPACES IF THERE IS A CAPTURE SPACE
+    if(typeof empIDg ==="number"){
+        let trueIDs = []
+        for(let i=0;i<cont2ID.length;i++){
+            containers.forEach(container=>{
+                if(container.id==cont2ID[i]){
+                    trueIDs.push(container)
+                }
+            }) 
+        }
+        console.log(trueIDs)
+        containers = trueIDs
+    }
+
+    let homeSpace = "#"+posArray[curPosBInd]
+    homeSpaceG = homeSpace
+    
+    $(homeSpaceG).on('dragover', event =>{
+        event.preventDefault()
+        let draggable = document.querySelector('.dragging')
+        $(homeSpace).append(draggable)
+        curPosB = $(draggable).parent().attr("id")
+        contRemove.forEach(cont=>{
+        $(cont).removeClass("highLightedB")
+        })
+        redToMove=false
+    })
+    containersG = containers
+    $(".w").removeClass("hghLghtSqrB")
+    containersG.forEach(container => {  
+        
+        if(container.innerHTML==""){
+            $(container).addClass("hghLghtSqrB")
+        $(container).on('dragover', event => {
+            event.preventDefault()
+            let draggable = document.querySelector('.dragging')
+            container.appendChild(draggable)
+            curPosB = $(draggable).parent().attr("id")
+            redToMove=true
+            contRemove.forEach(cont=>{
+                let containInd = posArray.indexOf(container.id)
+                let contInd = posArray.indexOf(cont.parentElement.id)
+                if(
+                    contInd == containInd-9|
+                    contInd == containInd-7|
+                    contInd == containInd+9|
+                    contInd == containInd+7)
+                    {
+                $(cont).addClass("highLightedB")
+                    }
+            })
+            
+        
+        })
+        }
+    })
+    console.log(posArray[empIDg])
+   
+   
+
+    
+    }//END FINDLEGALMOVES
+function evalLegalMovesB(){
+    contRemove = []
+    let cont2ID=[]
+        empIDg = null
+    let empID
+    let legalMovesBInd = []
+    let legMovIDs = ""
+    let curPosBInd = posArray.indexOf(curPosB.toString())
+    //Checks if position is A or H
+    if(curPosBInd<=7){legMovIDs = "#"+posArray[curPosBInd+9]}
+    else if(curPosBInd>=56){legMovIDs = "#"+posArray[curPosBInd-7]}
+    //Checks other position
+    else {
+        legMovIDs= "#"+posArray[curPosBInd+9]+","+"#"+posArray[curPosBInd-7]
+
+    }
+    let containers = Array.from(document.querySelectorAll(legMovIDs))
+
+    if($("#"+posArray[curPosBInd]).children().hasClass('king')){
+        let kngSqr1 = document.querySelector("#"+posArray[curPosBInd+7])
+        let kngSqr2 = document.querySelector("#"+posArray[curPosBInd-9])
+
+        if (kngSqr1!=null){containers.push(kngSqr1)}
+        if (kngSqr2!=null){containers.push(kngSqr2)}
+        
+        console.log(containers)
+    }
+    containers.forEach(container =>{
+       let conChildren = Array.from(container.children)
+           conChildren.forEach(conChild =>{
+               if(conChild.classList.contains("pieceR")){
+                    let ind = posArray.indexOf(conChild.parentElement.id)
+                    conChildIDs= "#"+posArray[ind+9]+","+"#"+posArray[ind-7]
+                    //**Add King Child ID's option if king*************************************
+                    if($("#"+posArray[curPosBInd]).children().hasClass('king')){
+                        conChildIDs+=",#"+posArray[ind-9]+","+"#"+posArray[ind+7]
+                    }
+                    
+                    
+                    let containers2 = document.querySelectorAll(conChildIDs)
+                        containers2.forEach(cont2 =>{
+                            let conGrnChild=cont2.firstChild
+                            if (conGrnChild==null){
+                /////////////////Okay, we've found an empty ID. Let's see if it's a capture.
+                               // 14 | -18
+                               let empInd = posArray.indexOf(cont2.id)
+                                console.log(cont2.id)
+                                let nullSqrIDs = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1', 'H1']
+                                nullSqrIDs.forEach(nsqr=>{
+                                    if(nsqr==cont2.id){
+                                        empInd=null
+                                    }
+                                })
+                                if(empInd == curPosBInd-14){                                
+                                    containers.splice(containers.indexOf(container),1,document.querySelector("#"+posArray[empInd]))
+                                    contRemove.push(container.firstChild)
+                                    empID = "#"+cont2.id
+                                    empIDg = empInd
+                                    console.log(empIDg + " :empIDg")
+                                } 
+                                if(empInd == curPosBInd+18){
+                                    containers.splice(containers.indexOf(container),1,document.querySelector("#"+posArray[empInd]))                                   
+                                    contRemove.push(container.firstChild)
+                                    empID = "#"+cont2.id
+                                    empIDg = empInd
+                                    console.log(empIDg + " :empIDg")
+                                }
+                                if(empInd == curPosBInd+14){                                
+                                    containers.splice(containers.indexOf(container),1,document.querySelector("#"+posArray[empInd]))
+                                    contRemove.push(container.firstChild)
+                                    empID = "#"+cont2.id
+                                    empIDg = empInd
+                                    console.log(empIDg + " :empIDg")
+                                } 
+                                if(empInd == curPosBInd-18){
+                                    containers.splice(containers.indexOf(container),1,document.querySelector("#"+posArray[empInd]))                                   
+                                    contRemove.push(container.firstChild)
+                                    empID = "#"+cont2.id
+                                    empIDg = empInd
+                                    console.log(empIDg + " :empIDg")
+                                }
+
+                            }
+                
+                    })
+
+                   
+        
+               }
+               
+           })
+  
+    })
+  
+    }//END EVAL
+$(document).on('mouseup',()=>{
+    containersG.forEach(container=>{
+            $(container).off('dragover')
+        })
+})
+$(document).on('dragover',event =>{
+        event.preventDefault()
+    })
+
+$(document).on('drop',event =>{
+    let movOrdTrue=true    
+        event.preventDefault()
+        $(".w").removeClass("hghLghtSqrR")
+        $(".w").removeClass("hghLghtSqrB")
+        $(".b").removeClass("hghLghtSqrR")
+        $(".b").removeClass("hghLghtSqrB")
+        $(homeSpaceG).off('dragover')
+        containersG.forEach(container=>{
+            $(container).off('dragover')
+        })
+        checkKing()
+        
+        contRemove.forEach(cont=>{
+        if($(cont).hasClass("highLightedB")){
+            $(cont).removeClass("highLightedB")
+            $(cont).remove()
+            //alert("CAPTURED BLUE!")
+            evalLegalMovesB()
+            if(typeof empIDg==='number'){
+                
+                movOrdTrue=false
+                redToMove=false
+                checkCapture()
+                return}
+        }
+        else if($(cont).hasClass("highLightedR")){
+            $(cont).removeClass("highLightedR")
+            $(cont).remove()
+            //alert("CAPTURED RED!")
+            evalLegalMovesR()
+            if(typeof empIDg==='number'){
+                
+                movOrdTrue=false
+                redToMove=true
+                checkCapture()
+                return}
+        }
+        
+        })
+        
+        
+       
+        if(movOrdTrue==true){
+        moveOrder()
+        checkCapture()
+        empIDg=null
+        containersG=null
+        homeSpaceG=null
+        }
+        
+        
+})  
+
+    
+function checkKing(){
+    
+    let kngSqrsR = Array.from(document.querySelectorAll("#B1, #D1, #F1, #H1"))
+    kngSqrsR.forEach(sqr=>{
+        if(sqr.firstChild!=null){
+        if(sqr.firstChild.classList.contains('pieceR')){
+        sqr.firstChild.classList.add('king')
+        }
+        }
+    })
+    let kngSqrsB = Array.from(document.querySelectorAll("#A8, #C8, #E8, #G8"))
+    kngSqrsB.forEach(sqrB=>{
+        if(sqrB.firstChild!=null){
+        if(sqrB.firstChild.classList.contains('pieceB')){
+        sqrB.firstChild.classList.add('king')
+        }
+        }
+    })
+    
+}
+function checkCapture(){
+  if(redToMove==true){
+    let piecesR = Array.from(document.querySelectorAll(".pieceR"))
+    let piecesRLength = piecesR.length
+    for(let i = 0;i<piecesR.length;i++){
+        empIDg=null
+        curPosR = $(piecesR[i]).parent().attr("id")
+        evalLegalMovesR()
+        if(typeof empIDg==="number"){
+            piecesR.splice(i,1)
+        } 
+    }
+   if(piecesR.length<piecesRLength){
+    for(let i = 0;i<piecesR.length;i++){
+           $(piecesR[i]).css({"opacity":"0.6"})
+           $(piecesR[i]).off("mouseenter")
+           $(piecesR[i]).off("mouseleave")
+           $(piecesR[i]).off("mousedown")
+           $(piecesR[i]).off("mouseup")
+           $(piecesR[i]).removeAttr("draggable")
+    }
+   }
+}//if(redToMove==true)
+if(redToMove==false){
+    let piecesB = Array.from(document.querySelectorAll(".pieceB"))
+    let piecesBLength = piecesB.length
+    for(let i = 0;i<piecesB.length;i++){
+        empIDg=null
+        curPosB = $(piecesB[i]).parent().attr("id")
+        evalLegalMovesB()
+        if(typeof empIDg==="number"){
+            piecesB.splice(i,1)
+        } 
+    }
+   if(piecesB.length<piecesBLength){
+    for(let i = 0;i<piecesB.length;i++){
+           $(piecesB[i]).css({"opacity":"0.6"})
+           $(piecesB[i]).off("mouseenter")
+           $(piecesB[i]).off("mouseleave")
+           $(piecesB[i]).off("mousedown")
+           $(piecesB[i]).off("mouseup")
+           $(piecesB[i]).removeAttr("draggable")
+    }
+   }
+}//if(redToMove==false)
+}//checkCapture()
+
+
+/*
+THE FINAL BUG: GETTING RID OF TWO-SQUARE CAPTURE!!!
+*/
+
+
+
+</script>
+</body>
+</html>
+</script>
+
+</body>
+</html>
